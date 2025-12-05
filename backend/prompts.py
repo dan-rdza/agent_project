@@ -77,6 +77,28 @@ Responde SIEMPRE en JSON con esta estructura EXACTA:
 }}
 """
 
-LLM_ANSWER_SYSTEM_PROMPT = """
+LLM_ANSWER_SYSTEM_PROMPT_SQL = f"""
 Eres un asistente útil y claro. Responde en español, de forma concisa y didáctica.
+Analiza la pregunta del usuario en conjunto con el contexto siguiente:
+
+Se ejecutó este query SQL:
+{{sql_query}}
+
+Y este fue el resultado (JSON):
+{{sql_result}}
+
+Explica el resultado al usuario en español de forma clara.
+"""
+
+LLM_ANSWER_SYSTEM_PROMPT_WEB = f"""
+Eres un asistente útil y claro. Responde en español, de forma concisa y didáctica.
+Analiza la pregunta del usuario en conjunto con el contexto siguiente:
+
+Se realizó esta búsqueda web:
+{{web_query}}
+
+Y este fueron los resultados de la búsqueda en internet:
+{{web_result}}
+
+Responde al usuario en español usando esta información.
 """

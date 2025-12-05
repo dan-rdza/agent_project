@@ -9,7 +9,7 @@ from typing import Dict, Any
 from .llm_client import LLMClient
 from .db_client import run_select_query
 from .web_search import WebSearchClient
-from .prompts import ROUTER_SYSTEM_PROMPT, LLM_ANSWER_SYSTEM_PROMPT
+from .prompts import ROUTER_SYSTEM_PROMPT, LLM_ANSWER_SYSTEM_PROMPT_SQL, LLM_ANSWER_SYSTEM_PROMPT_WEB
 
 
 class AgentRouter:
@@ -37,8 +37,7 @@ class AgentRouter:
 
         router_result = self.llm.chat_json(router_messages)
         
-        print(f"Intención del usuario: {router_result.get('intent')}")
-        print(f"Explicación: {router_result.get('explanation')}")
+        print(f"""🤖 Petición al LLM - Detector de Itenciones""")
 
         intent = router_result.get("intent", "llm")
         sql_query = router_result.get("sql_query", "") or ""
@@ -49,30 +48,26 @@ class AgentRouter:
             return self._handle_sql(user_message, sql_query)
         elif intent == "web" and web_query:
             return self._handle_web(user_message, web_query)
-        else:
-            # Intent llm o fallback
+        else: # Fallback
             return self._handle_llm(user_message)
 
     def _handle_sql(self, user_message: str, sql_query: str) -> Dict[str, Any]:
+        
+        # Aquí lanzamos la petición al cliente SQL
         sql_result = run_select_query(sql_query)
 
         # Construimos una respuesta amigable usando el LLM
-        explanation_messages = [
-            {"role": "system", "content": LLM_ANSWER_SYSTEM_PROMPT},
-            {
-                "role": "user",
-                "content": (
-                    "El usuario hizo esta pregunta:\n"
-                    f"{user_message}\n\n"
-                    "Se ejecutó este query SQL:\n"
-                    f"{sql_query}\n\n"
-                    f"Y este fue el resultado (JSON):\n{sql_result}\n\n"
-                    "Explica el resultado al usuario en español de forma clara."
-                ),
-            },
+        system_prompt = LLM_ANSWER_SYSTEM_PROMPT_SQL.format(            
+            sql_query=sql_query,
+            sql_result=sql_result
+            )
+
+        messages = [
+            {"role": "system", "content": system_prompt},            
+            {"role": "user", "content": user_message},
         ]
 
-        reply_text = self.llm.chat(explanation_messages)
+        reply_text = self.llm.chat(messages=messages, temperature=0.1)
 
         return {
             "intent": "sql",
@@ -84,23 +79,18 @@ class AgentRouter:
         }
 
     def _handle_web(self, user_message: str, web_query: str) -> Dict[str, Any]:
+        
+        #Aquí lanzamos petición a búsqueda en API Tavily
         web_result = self.web_client.search(web_query)
 
-        # Llamamos al LLM para que sintetice
+        system_prompt = LLM_ANSWER_SYSTEM_PROMPT_WEB.format(            
+            web_query=web_query,
+            web_result=web_result
+            )
 
         messages = [
-            {"role": "system", "content": LLM_ANSWER_SYSTEM_PROMPT},
-            {
-                "role": "user",
-                "content": (
-                    "El usuario hizo esta pregunta:\n"
-                    f"{user_message}\n\n"
-                    "Se realizó esta búsqueda web:\n"
-                    f"{web_query}\n\n"
-                    f"Y este fueron los resultados de la búsqueda en internet:\n{web_result}\n\n"
-                    "Responde al usuario en español usando esta información."
-                ),
-            },
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message},
         ]
 
         reply_text = self.llm.chat(messages)
@@ -116,7 +106,7 @@ class AgentRouter:
 
     def _handle_llm(self, user_message: str) -> Dict[str, Any]:
         messages = [
-            {"role": "system", "content": LLM_ANSWER_SYSTEM_PROMPT},
+            {"role": "system", "content": "Eres un asistente útil y claro. Responde en español, de forma concisa y didáctica."},
             {"role": "user", "content": user_message},
         ]
         reply_text = self.llm.chat(messages)

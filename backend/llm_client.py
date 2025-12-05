@@ -37,6 +37,8 @@ class LLMClient:
             "temperature": temperature, # Define que tal creativo o determinista es el modelo
         }
 
+        print(f"""🤖 Petición al LLM - Ejecución de tarea""")
+
         response = requests.post(
             self.api_url,
             headers=self._build_headers(),
@@ -48,8 +50,7 @@ class LLMClient:
         data = response.json()
         return data["choices"][0]["message"]["content"]
 
-    def chat_json(self, messages: List[Dict[str, str]], temperature: float = 0.0,
-    ) -> Dict[str, Any]:
+    def chat_json(self, messages: List[Dict[str, str]], temperature: float = 0.0) -> Dict[str, Any]:
         """
         Envía un prompt al modelo y exige que responda SOLO con JSON válido.
         """
@@ -71,8 +72,6 @@ class LLMClient:
             "messages": final_messages,
             "temperature": temperature,
         }
-
-        # print(f"Payload: {payload}")
 
         response = requests.post(
             self.api_url,

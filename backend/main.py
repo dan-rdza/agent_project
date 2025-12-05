@@ -23,16 +23,13 @@ app.add_middleware(
 
 router = AgentRouter()
 
-
 class ChatRequest(BaseModel):
     message: str
-
 
 class SQLResult(BaseModel):
     columns: list[str] = []
     rows: list[Any] = []
     error: Optional[str] = None
-
 
 class ChatResponse(BaseModel):
     intent: str
@@ -49,6 +46,7 @@ def agent_endpoint(req: ChatRequest):
     Endpoint principal: recibe un mensaje del usuario
     y devuelve la respuesta del agente.
     """
+    
     result = router.route(req.message)
 
     # Normalizamos el sql_result para ajustarlo al modelo Pydantic
@@ -60,7 +58,7 @@ def agent_endpoint(req: ChatRequest):
         intent=result.get("intent", "llm"),
         reply=result.get("reply", ""),
         sql_query=result.get("sql_query"),
-        sql_result=sql_res,  # Pydantic lo adaptará a SQLResult
+        sql_result=sql_res,
         web_query=result.get("web_query"),
         web_raw_result=result.get("web_raw_result"),
     )

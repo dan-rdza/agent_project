@@ -1,14 +1,13 @@
 # frontend/app.py
 """
-Interfaz sencilla de chat usando Streamlit.
-Se comunica con el backend FastAPI en http://localhost:8000/agent
+Interfaz tipo chat usando Streamlit.
 """
 
 import requests
 import streamlit as st
 
 BACKEND_URL = "http://localhost:8000/agent"
-
+CHAT_NAME = "BEDUito"
 
 def send_message_to_backend(message: str):
     payload = {"message": message}
@@ -18,12 +17,11 @@ def send_message_to_backend(message: str):
 
 
 def main():
-    st.set_page_config(page_title="Agente LLM", page_icon="🤖")
-    st.title("🤖 Agente LLM")
+    st.set_page_config(page_title=CHAT_NAME, page_icon="🤖")
+    st.title("🧠 BEDUito Chat")
 
     # Estado de la conversación
     if "chat_history" not in st.session_state:
-        # Cada elemento: {"role": "user"/"assistant", "content": str, "meta": dict}
         st.session_state.chat_history = []
 
     # Creamos contenedores para controlar el orden visual:
@@ -44,11 +42,12 @@ def main():
 
             # Llamamos al backend y guardamos la respuesta del asistente
             try:
-                with st.spinner("Pensando..."):
+                with st.spinner("Procesando..."):
                     response = send_message_to_backend(user_input)
-
+                
+                # print(f"All response from LLm: {response}")            
                 reply = response.get("reply", "")
-
+                
                 st.session_state.chat_history.append(
                     {
                         "role": "assistant",
@@ -70,7 +69,7 @@ def main():
                 )
 
     # --- MOSTRAR HISTORIAL COMPLETO (incluye el último turno) ---
-    with history_container:
+    with history_container: 
         for msg in st.session_state.chat_history:
             role = msg["role"]
             content = msg["content"]
@@ -80,15 +79,14 @@ def main():
                 with st.chat_message("user"):
                     st.markdown(content)
             else:
+                source_caption = ""
                 with st.chat_message("assistant"):
                     st.markdown(content)
 
                     # Si hay meta de SQL, mostramos tabla
-                    if meta.get("intent") == "sql" and meta.get("sql_result"):
-                        st.caption("🚀 Fuente: Base de datos de tickets") 
-                        st.code(f"{meta.get('sql_query')}",language="sql")
+                    if meta.get("intent") == "sql" and meta.get("sql_result"):                                                
                         sql_res = meta["sql_result"]
-
+                        source_caption = "**🚀 Fuente:** Base de datos de tickets"
                         # Por si el backend manda algún error encapsulado ahí
                         if isinstance(sql_res, dict) and sql_res.get("error"):
                             st.error(f"Error SQL: {sql_res['error']}")
@@ -97,14 +95,14 @@ def main():
                             rows = sql_res.get("rows", [])
                             if cols and rows:
                                 st.caption("Resultados de la consulta SQL:")
+                                st.code(f"{meta.get('sql_query')}",language="sql")
                                 st.dataframe(
-                                    [dict(zip(cols, row)) for row in rows],
-                                    width=True,
+                                    [dict(zip(cols, row)) for row in rows],                                    
                                 )
 
                     # Opcional: mostrar fuentes web si la intención fue "web"
                     if meta.get("intent") == "web" and meta.get("web_raw_result"):
-                        st.caption("🌍 Fuentes utilizadas (búsqueda web)")
+                        source_caption ="**🌍 Fuente:** Búsqueda en la web"
                         sources = meta["web_raw_result"]
                         # Esperamos una lista de dicts con 'title' y 'url'
                         if isinstance(sources, list):
@@ -112,13 +110,14 @@ def main():
                                 title = source.get("title", "Sin título")
                                 url = source.get("url")
                                 if url:
-                                    st.markdown(f"- {i}. [{title}]({url})")
+                                    st.badge(f"{i}. [{title}] ({url})", color="violet")
                                 else:
-                                    st.markdown(f"- {i}. {title}")
+                                    st.badge(f"{i}. {title}", color="violet")
 
                     if meta.get("intent") == "llm":
-                        st.caption("🧠 Se ha utilizado el conocimiento del LLM")
-
+                        source_caption = "**🧠 Fuente:** Conocimiento del LLM"
+                    
+                    st.caption(source_caption) 
 
 if __name__ == "__main__":
     main()
