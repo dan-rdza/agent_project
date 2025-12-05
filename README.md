@@ -45,7 +45,7 @@ pip install -r requirements.txt
     LLM_API_URL=http://localhost:1234/v1/chat/completions
     LLM_MODEL=llama-3.2-8b-instruct
     TAVILY_API_KEY=TU_API_KEY
-    DB_PATH=./tickets.db
+    DB_PATH=./database.db
 
 ### 4. Levantar backend
 
