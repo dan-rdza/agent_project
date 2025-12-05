@@ -59,6 +59,18 @@ uvicorn backend.main:app --reload --port 8000
 streamlit run frontend/app.py
 ```
 
+### 6. 🧠 Cómo funciona el agente internamente
+
+1. User → mensaje textual
+2. FastAPI → Router decide intención via LLM
+3. Según la intención:
+   - **sql** → genera SQL, ejecuta, resume resultados
+   - **web** → busca info con Tavily, resume, devuelve fuentes
+   - **llm** → respuesta directa del modelo
+4. Devue lve JSON a Streamlit
+5. Streamlit muestra la respuesta y renderiza tablas o fuentes
+
+
 ## Ejemplos de uso
 
 ### Consulta SQL
