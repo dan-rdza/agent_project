@@ -1,8 +1,7 @@
 # Agente LLM con Conexión a SQLite
 
-Un agente inteligente que combina **consultas SQL**, **búsqueda web** y
-**razonamiento natural** usando un **modelo LLM local o remoto** con API
-tipo OpenAI.
+Este proyecto consiste en un agente inteligente que combina **consultas SQL**, **búsqueda web** y
+**razonamiento natural** usando un **modelo LLM local o remoto** con API tipo OpenAI.
 
 ## Estructura del proyecto
 
@@ -28,6 +27,7 @@ tipo OpenAI.
 
 ### 1. Crear entorno virtual
 
+Este proyecto se creo sobre un entorno virtual con python 3.10
 ``` bash
 python -m venv .venv
 source .venv/bin/activate   # Linux/Mac
@@ -53,21 +53,23 @@ pip install -r requirements.txt
 
     TAVILY_API_KEY=""
 
-    DB_PATH=./tickets.db
+    DB_PATH=./database.db
 
 ### 4. Levantar backend
 
+Se levanta un servicio FastAPI
 ``` bash
 uvicorn backend.main:app --reload --port 8000
 ```
 
 ### 5. Levantar frontend
 
+Se levanta un frontend con el framework Streamlit
 ``` bash
 streamlit run frontend/app.py
 ```
 
-### 6. 🧠 Cómo funciona el agente internamente
+### 6. 🧠 Cómo funciona el agente
 
 1. User → mensaje textual
 2. FastAPI → Router decide intención via LLM
@@ -79,16 +81,29 @@ streamlit run frontend/app.py
 5. Streamlit muestra la respuesta y renderiza tablas o fuentes
 
 
-## Ejemplos de uso
+### 7. Ejemplos de uso
 
-### Consulta SQL
+#### Consulta SQL
 
-> "Muéstrame los tickets abiertos."
+> "Dame un top de los datos de la tabla <tabla> por fecha"
+> "Cuáles son los detalles del campo <campo> de la tabla <tabla>"
 
-### Web search
+#### Web search
 
 > "¿Cuáles son los trending topics?"
+> "¿Cuál es la noticia más reciente de la ciudad de méxico?"
+> "Dime el pronostico del tiempo de Quintana Roo"
 
-### Respuesta LLM
+#### Respuesta LLM
 
 > "Explica qué es un SLA."
+> "¿Qué es la IA?"
+
+
+### 8. Pasos Siguientes
+> Integraciones con bases vectoriales
+> Integración de memoria contextual para mantener un chat conversacional
+> Integración con servicio de embeddings para busquedas en bases de conocimientos
+> Integraciones con servicios de otras APIs, ejecución de tareas.
+
+
