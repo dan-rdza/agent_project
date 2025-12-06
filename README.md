@@ -1,4 +1,4 @@
-# Agente LLM para Ticketing
+# Agente LLM con Conexión a SQLite
 
 Un agente inteligente que combina **consultas SQL**, **búsqueda web** y
 **razonamiento natural** usando un **modelo LLM local o remoto** con API
