@@ -51,7 +51,7 @@ pip install -r requirements.txt
     OPENAI_API_KEY=""
     GEMINI_API_KEY=""
 
-    TAVILY_API_KEY=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
+    TAVILY_API_KEY=""
 
     DB_PATH=./tickets.db
 
