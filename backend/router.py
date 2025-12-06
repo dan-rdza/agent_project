@@ -37,11 +37,13 @@ class AgentRouter:
 
         router_result = self.llm.chat_json(router_messages)
         
-        print(f"""🤖 Petición al LLM - Detector de Itenciones""")
+        print(f"""🤖 Petición al LLM - Detector de Itenciones.""")
 
         intent = router_result.get("intent", "llm")
         sql_query = router_result.get("sql_query", "") or ""
         web_query = router_result.get("web_query", "") or ""
+
+        print(f"""🤖 Petición al LLM - Ejecutando tarea [{intent}].""")
 
         # 2) Según la intención, actuamos:
         if intent == "sql" and sql_query:
@@ -55,7 +57,8 @@ class AgentRouter:
         
         # Aquí lanzamos la petición al cliente SQL
         sql_result = run_select_query(sql_query)
-
+        print(f"Se ejecuto el SQL")
+        
         # Construimos una respuesta amigable usando el LLM
         system_prompt = LLM_ANSWER_SYSTEM_PROMPT_SQL.format(            
             sql_query=sql_query,
@@ -66,8 +69,8 @@ class AgentRouter:
             {"role": "system", "content": system_prompt},            
             {"role": "user", "content": user_message},
         ]
-
-        reply_text = self.llm.chat(messages=messages, temperature=0.1)
+        
+        reply_text = self.llm.chat(messages=messages)
 
         return {
             "intent": "sql",
