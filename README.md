@@ -20,7 +20,7 @@ tipo OpenAI.
     ├── frontend/
     │   └── app.py
     │
-    ├── tickets.db
+    ├── database.db (SQLite)
     ├── requirements.txt
     └── README.md
 
