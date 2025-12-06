@@ -42,10 +42,18 @@ pip install -r requirements.txt
 
 ### 3. Configurar .env
 
-    LLM_API_URL=http://localhost:1234/v1/chat/completions
-    LLM_MODEL=llama-3.2-8b-instruct
-    TAVILY_API_KEY=TU_API_KEY
-    DB_PATH=./database.db
+    LLM_PROVIDER="local"  # "openai" | "gemini" | "local" | "lmstudio"
+
+    LLM_API_BASE=http://localhost:8001/v1
+    LLM_MODEL=model_name
+
+    LLM_API_KEY=""
+    OPENAI_API_KEY=""
+    GEMINI_API_KEY=""
+
+    TAVILY_API_KEY=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
+
+    DB_PATH=./tickets.db
 
 ### 4. Levantar backend
 
