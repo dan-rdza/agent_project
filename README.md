@@ -101,9 +101,9 @@ streamlit run frontend/app.py
 
 
 ### 8. Pasos Siguientes
-> Integraciones con bases vectoriales
-> Integración de memoria contextual para mantener un chat conversacional
-> Integración con servicio de embeddings para busquedas en bases de conocimientos
-> Integraciones con servicios de otras APIs, ejecución de tareas.
+- Integraciones con bases vectoriales
+- Integración de memoria contextual para mantener un chat conversacional
+- Integración con servicio de embeddings para busquedas en bases de conocimientos
+- Integraciones con servicios de otras APIs, ejecución de tareas.
 
 
